@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NSS Volunteer Registration — M.G.R. College, Hosur</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --indigo:#1C2541; --ink:#12182B; --marigold:#E8A33D; --marigold-soft:#F3C878;
+    --banyan:#4B6B53; --parchment:#EDE6D6; --danger:#C4562F;
+    --font-display:'Syne',sans-serif; --font-body:'Plus Jakarta Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; font-family:var(--font-body); color:var(--parchment);
+    background:
+      radial-gradient(1000px 500px at 15% -8%, #253253 0%, transparent 60%),
+      radial-gradient(900px 550px at 100% 105%, #1a2038 0%, transparent 55%),
+      var(--indigo);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+
+  .app{ width:100%; max-width:560px; }
+
+  .sunrays{
+    position:fixed; top:-30%; left:50%; transform:translateX(-50%);
+    width:1400px; height:1400px; pointer-events:none; z-index:0; opacity:0.05;
+    background: repeating-conic-gradient(var(--marigold) 0deg 4deg, transparent 4deg 18deg);
+    border-radius:50%;
+  }
+
+  .card{
+    position:relative; z-index:1;
+    background:rgba(255,255,255,0.045);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(232,163,61,0.28);
+    border-radius:22px;
+    padding:30px 26px 26px;
+    box-shadow:0 30px 60px -25px rgba(0,0,0,0.6);
+  }
+
+  .brand{ text-align:center; margin-bottom:18px; }
+  .brand .crest{
+    width:52px; height:52px; margin:0 auto 10px; border-radius:14px;
+    border:1.5px solid var(--marigold); display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:800; font-size:20px; color:var(--marigold);
+  }
+  .brand h1{ font-family:var(--font-display); font-weight:800; font-size:19px; margin:0; letter-spacing:-0.01em; }
+  .brand p{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:#a9b2c9; margin:6px 0 0; }
+
+  .progress{ display:flex; gap:6px; margin:20px 0 24px; }
+  .progress div{ flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.1); transition:background 0.3s; }
+  .progress div.done{ background:var(--marigold); }
+
+  .step{ display:none; }
+  .step.active{ display:block; animation:fade 0.35s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  h2.qtitle{ font-family:var(--font-display); font-size:22px; font-weight:700; margin:0 0 6px; }
+  p.qhint{ font-size:13.5px; color:#a9b2c9; margin:0 0 18px; line-height:1.5; }
+
+  label.field{ display:block; margin-bottom:16px; }
+  label.field span{ display:block; font-size:12.5px; font-weight:600; color:var(--marigold-soft); margin-bottom:7px; letter-spacing:0.01em; }
+  input[type=text], input[type=tel], input[type=email], input[type=date], input[type=number], select, textarea{
+    width:100%; padding:14px 15px; border-radius:12px; border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.05); color:var(--parchment); font-family:var(--font-body); font-size:15px;
+    outline:none; transition:border 0.2s;
+  }
+  input:focus, select:focus, textarea:focus{ border-color:var(--marigold); }
+  textarea{ resize:vertical; min-height:70px; }
+
+  .choice-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .choice{
+    flex:1; min-width:110px; padding:14px 10px; text-align:center; border-radius:12px;
+    border:1.5px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.04);
+    cursor:pointer; font-size:14px; font-weight:600; transition:all 0.15s; user-select:none;
+  }
+  .choice.selected{ border-color:var(--marigold); background:rgba(232,163,61,0.14); color:var(--marigold-soft); }
+
+  .btn-row{ display:flex; gap:12px; margin-top:22px; }
+  button{ font-family:var(--font-body); font-weight:700; border:none; border-radius:12px; cursor:pointer; font-size:15px; padding:14px 22px; }
+  .btn-primary{ flex:1; background:linear-gradient(135deg,var(--marigold-soft),var(--marigold)); color:var(--ink); }
+  .btn-primary:disabled{ opacity:0.4; cursor:not-allowed; }
+  .btn-ghost{ background:rgba(255,255,255,0.06); color:var(--parchment); }
+
+  .photo-options{ display:flex; gap:12px; margin-bottom:16px; }
+  .photo-btn{ flex:1; padding:14px; border-radius:12px; border:1.5px dashed rgba(255,255,255,0.22); background:rgba(255,255,255,0.03); text-align:center; font-size:13.5px; font-weight:600; cursor:pointer; }
+  .photo-btn.active{ border-color:var(--marigold); color:var(--marigold-soft); }
+  #videoWrap{ display:none; margin-bottom:14px; }
+  video{ width:100%; border-radius:14px; }
+  #photoPreviewWrap{ display:none; text-align:center; margin-bottom:14px; }
+  #photoPreview{ width:150px; height:150px; object-fit:cover; border-radius:14px; border:1.5px solid var(--marigold); }
+
+  .review-list{ font-size:14px; }
+  .review-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.07); }
+  .review-row b{ color:var(--marigold-soft); font-weight:600; }
+
+  .error{ color:var(--danger); font-size:12.5px; margin-top:-8px; margin-bottom:12px; display:none; }
+  .error.show{ display:block; }
+
+  .success-badge{
+    width:70px; height:70px; border-radius:50%; background:var(--banyan); margin:0 auto 18px;
+    display:flex; align-items:center; justify-content:center; font-size:34px; color:var(--parchment);
+  }
+  .id-display{ font-family:var(--font-mono); font-size:19px; text-align:center; color:var(--marigold-soft); letter-spacing:0.05em; margin:6px 0 20px; }
+
+  .card-preview{ display:flex; gap:14px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
+  .card-preview canvas{ width:130px; border-radius:10px; box-shadow:0 12px 30px -10px rgba(0,0,0,0.6); }
+
+  .download-row{ display:flex; gap:10px; margin-bottom:8px; }
+
+  .lookup-link{ text-align:center; margin-top:16px; font-size:12.5px; color:#8b96b3; }
+  .lookup-link a{ color:var(--marigold-soft); cursor:pointer; text-decoration:underline; }
+
+  .spinner{
+    width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,0.15);
+    border-top-color:var(--marigold); margin:0 auto 14px; animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .status-note{ text-align:center; font-size:13px; color:#a9b2c9; }
+
+  @media(max-width:420px){ .card{ padding:22px 18px 20px; } }
+</style>
+</head>
+<body>
+
+<div class="sunrays"></div>
+
+<div class="app">
+  <div class="card">
+    <div class="brand">
+      <div class="crest">N</div>
+      <h1>NSS Volunteer Registration</h1>
+      <p>M.G.R. College, Hosur &middot; Batch 2025&ndash;2026</p>
+    </div>
+
+    <div class="progress" id="progressBar"></div>
+
+    <!-- STEP 0: Welcome -->
+    <div class="step active" data-step="0">
+      <h2 class="qtitle">Welcome 👋</h2>
+      <p class="qhint">This takes about 3 minutes. You'll need your Aadhaar number and a clear photo of your face. At the end, you'll get your official NSS volunteer ID card by email.</p>
+      <div class="btn-row"><button class="btn-primary" onclick="goTo(1)">Start registration</button></div>
+      <div class="lookup-link">Already registered? <a onclick="showLookup()">Get my ID card again</a></div>
+    </div>
+
+    <!-- STEP 1: Name -->
+    <div class="step" data-step="1">
+      <h2 class="qtitle">What's your full name?</h2>
+      <p class="qhint">Enter it exactly as it should appear on your ID card.</p>
+      <label class="field"><span>Full name</span><input type="text" id="f_name" placeholder="e.g. Sri Kumar M"></label>
+      <div class="error" id="err1">Please enter your name.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(0)">Back</button><button class="btn-primary" onclick="validateStep(1)">Next</button></div>
+    </div>
+
+    <!-- STEP 2: Gender + DOB -->
+    <div class="step" data-step="2">
+      <h2 class="qtitle">A little about you</h2>
+      <label class="field"><span>Gender</span>
+        <div class="choice-row" id="genderRow">
+          <div class="choice" data-val="Male" onclick="pick('genderRow',this,'gender')">Male</div>
+          <div class="choice" data-val="Female" onclick="pick('genderRow',this,'gender')">Female</div>
+        </div>
+      </label>
+      <label class="field"><span>Date of birth</span><input type="date" id="f_dob"></label>
+      <div class="error" id="err2">Please select gender and date of birth.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(1)">Back</button><button class="btn-primary" onclick="validateStep(2)">Next</button></div>
+    </div>
+
+    <!-- STEP 3: Class + Subject -->
+    <div class="step" data-step="3">
+      <h2 class="qtitle">Your course</h2>
+      <label class="field"><span>Class</span><input type="text" id="f_class" placeholder="e.g. II BCA"></label>
+      <label class="field"><span>Subject of study</span><input type="text" id="f_subject" placeholder="e.g. Computer Applications"></label>
+      <div class="error" id="err3">Please fill in both fields.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(2)">Back</button><button class="btn-primary" onclick="validateStep(3)">Next</button></div>
+    </div>
+
+    <!-- STEP 4: Mobile + Email -->
+    <div class="step" data-step="4">
+      <h2 class="qtitle">How can we reach you?</h2>
+      <p class="qhint">Your ID card will be emailed here — double-check the address.</p>
+      <label class="field"><span>Mobile number</span><input type="tel" id="f_mobile" placeholder="10-digit mobile number"></label>
+      <label class="field"><span>Email ID</span><input type="email" id="f_email" placeholder="you@example.com"></label>
+      <div class="error" id="err4">Please enter a valid 10-digit mobile number and email.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(3)">Back</button><button class="btn-primary" onclick="validateStep(4)">Next</button></div>
+    </div>
+
+    <!-- STEP 5: Aadhaar + Community + Blood Group -->
+    <div class="step" data-step="5">
+      <h2 class="qtitle">Official details</h2>
+      <label class="field"><span>Aadhaar number</span><input type="text" inputmode="numeric" id="f_aadhaar" placeholder="12-digit Aadhaar number" maxlength="12"></label>
+      <p class="qhint" style="margin:-10px 0 14px;">Kept private — never shown in full on your card or email.</p>
+      <label class="field"><span>Community</span>
+        <select id="f_community">
+          <option value="">Select</option>
+          <option>SC</option><option>ST</option><option>BC</option><option>OBC</option><option>Others</option>
+        </select>
+      </label>
+      <label class="field"><span>Blood group</span>
+        <select id="f_blood">
+          <option value="">Select</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+      </label>
+      <div class="error" id="err5">Please complete all three fields with a valid Aadhaar number.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(4)">Back</button><button class="btn-primary" onclick="validateStep(5)">Next</button></div>
+    </div>
+
+    <!-- STEP 6: Remarks + Photo -->
+    <div class="step" data-step="6">
+      <h2 class="qtitle">Your photo</h2>
+      <p class="qhint">This goes straight onto your ID card — face clearly visible, plain background if possible.</p>
+      <div class="photo-options">
+        <div class="photo-btn" id="btnCamera" onclick="usePhotoMode('camera')">📷 Use camera</div>
+        <div class="photo-btn" id="btnUpload" onclick="usePhotoMode('upload')">🖼️ Upload photo</div>
+      </div>
+      <div id="videoWrap">
+        <video id="video" autoplay playsinline></video>
+        <div class="btn-row"><button class="btn-primary" onclick="capturePhoto()">Capture</button></div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileUpload(event)">
+      <div id="photoPreviewWrap"><img id="photoPreview"></div>
+      <label class="field"><span>Remarks (optional)</span><textarea id="f_remarks" placeholder="Anything else you'd like to add"></textarea></label>
+      <div class="error" id="err6">Please add a photo before continuing.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(5)">Back</button><button class="btn-primary" onclick="validateStep(6)">Next</button></div>
+    </div>
+
+    <!-- STEP 7: Review -->
+    <div class="step" data-step="7">
+      <h2 class="qtitle">Check everything looks right</h2>
+      <div class="review-list" id="reviewList"></div>
+      <div class="error" id="err7"></div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(6)">Back</button><button class="btn-primary" id="submitBtn" onclick="submitAll()">Submit ✅</button></div>
+    </div>
+
+    <!-- STEP 8: Processing -->
+    <div class="step" data-step="8">
+      <div class="spinner"></div>
+      <p class="status-note" id="statusNote">Creating your volunteer ID...</p>
+    </div>
+
+    <!-- STEP 9: Success -->
+    <div class="step" data-step="9">
+      <div class="success-badge">✓</div>
+      <h2 class="qtitle" style="text-align:center;">You're registered!</h2>
+      <div class="id-display" id="finalIdDisplay">C26UG111NSS001</div>
+      <div class="card-preview">
+        <canvas id="frontCanvas" width="340" height="566"></canvas>
+        <canvas id="backCanvas" width="340" height="566"></canvas>
+      </div>
+      <div class="download-row">
+        <button class="btn-ghost" style="flex:1" onclick="downloadPNG()">Download PNG</button>
+        <button class="btn-ghost" style="flex:1" onclick="downloadPDF()">Download PDF</button>
+      </div>
+      <p class="status-note">A copy has also been emailed to you.</p>
+    </div>
+
+    <!-- STEP 10: Lookup -->
+    <div class="step" data-step="10">
+      <h2 class="qtitle">Get your ID card again</h2>
+      <p class="qhint">Enter your NSS ID or the email you registered with.</p>
+      <label class="field"><span>NSS ID or Email</span><input type="text" id="lookupInput" placeholder="C26UG111NSS001 or you@example.com"></label>
+      <div class="error" id="errLookup">We couldn't find a matching registration.</div>
+      <div class="btn-row"><button class="btn-ghost" onclick="goTo(0)">Back</button><button class="btn-primary" onclick="doLookup()">Find my card</button></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — set this after deploying Code.gs as a Web App
+   ============================================================ */
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+const TOTAL_STEPS = 8; // steps 0–7 count toward the progress bar
+let currentStep = 0;
+let photoDataUrl = null;
+let cameraStream = null;
+let assignedId = null;
+
+function buildProgress(){
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  for(let i=0;i<TOTAL_STEPS;i++){
+    const d = document.createElement('div');
+    bar.appendChild(d);
+  }
+}
+buildProgress();
+
+function goTo(step){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.step[data-step="'+step+'"]').classList.add('active');
+  currentStep = step;
+  document.querySelectorAll('#progressBar div').forEach((d,i)=>{
+    d.classList.toggle('done', i < step && step <= TOTAL_STEPS);
+  });
+  window.scrollTo(0,0);
+}
+
+function pick(rowId, el, field){
+  document.querySelectorAll('#'+rowId+' .choice').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  el.dataset.picked = 'true';
+  window['_'+field] = el.dataset.val;
+}
+
+function showErr(id, show){
+  document.getElementById(id).classList.toggle('show', show);
+}
+
+function validateStep(step){
+  if(step===1){
+    const v = document.getElementById('f_name').value.trim();
+    if(!v){ showErr('err1',true); return; } showErr('err1',false); goTo(2); return;
+  }
+  if(step===2){
+    const dob = document.getElementById('f_dob').value;
+    if(!window._gender || !dob){ showErr('err2',true); return; } showErr('err2',false); goTo(3); return;
+  }
+  if(step===3){
+    const c = document.getElementById('f_class').value.trim();
+    const s = document.getElementById('f_subject').value.trim();
+    if(!c || !s){ showErr('err3',true); return; } showErr('err3',false); goTo(4); return;
+  }
+  if(step===4){
+    const m = document.getElementById('f_mobile').value.trim();
+    const e = document.getElementById('f_email').value.trim();
+    if(!/^\d{10}$/.test(m) || !/^\S+@\S+\.\S+$/.test(e)){ showErr('err4',true); return; } showErr('err4',false); goTo(5); return;
+  }
+  if(step===5){
+    const a = document.getElementById('f_aadhaar').value.trim();
+    const com = document.getElementById('f_community').value;
+    const bg = document.getElementById('f_blood').value;
+    if(!/^\d{12}$/.test(a) || !com || !bg){ showErr('err5',true); return; } showErr('err5',false); goTo(6); return;
+  }
+  if(step===6){
+    if(!photoDataUrl){ showErr('err6',true); return; } showErr('err6',false); buildReview(); goTo(7); return;
+  }
+}
+
+/* ---------- Photo capture ---------- */
+function usePhotoMode(mode){
+  document.getElementById('btnCamera').classList.toggle('active', mode==='camera');
+  document.getElementById('btnUpload').classList.toggle('active', mode==='upload');
+  if(mode==='camera'){
+    document.getElementById('videoWrap').style.display = 'block';
+    document.getElementById('fileInput').style.display = 'none';
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' } }).then(stream=>{
+      cameraStream = stream;
+      document.getElementById('video').srcObject = stream;
+    }).catch(()=>{ alert('Camera not available — try Upload instead.'); });
+  } else {
+    document.getElementById('videoWrap').style.display = 'none';
+    if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); }
+    document.getElementById('fileInput').click();
+  }
+}
+function capturePhoto(){
+  const video = document.getElementById('video');
+  const c = document.createElement('canvas');
+  c.width = 400; c.height = 400;
+  const ctx = c.getContext('2d');
+  const size = Math.min(video.videoWidth, video.videoHeight);
+  ctx.drawImage(video, (video.videoWidth-size)/2, (video.videoHeight-size)/2, size, size, 0,0,400,400);
+  photoDataUrl = c.toDataURL('image/jpeg', 0.9);
+  showPhotoPreview();
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); }
+  document.getElementById('videoWrap').style.display = 'none';
+}
+function handleFileUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const c = document.createElement('canvas');
+      c.width = 400; c.height = 400;
+      const ctx = c.getContext('2d');
+      const size = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width-size)/2, (img.height-size)/2, size, size, 0,0,400,400);
+      photoDataUrl = c.toDataURL('image/jpeg', 0.9);
+      showPhotoPreview();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function showPhotoPreview(){
+  document.getElementById('photoPreviewWrap').style.display = 'block';
+  document.getElementById('photoPreview').src = photoDataUrl;
+}
+
+/* ---------- Review ---------- */
+function buildReview(){
+  const rows = [
+    ['Name', document.getElementById('f_name').value],
+    ['Gender', window._gender||''],
+    ['DOB', document.getElementById('f_dob').value],
+    ['Class', document.getElementById('f_class').value],
+    ['Subject', document.getElementById('f_subject').value],
+    ['Mobile', document.getElementById('f_mobile').value],
+    ['Email', document.getElementById('f_email').value],
+    ['Aadhaar', document.getElementById('f_aadhaar').value.replace(/\d(?=\d{4})/g,'•')],
+    ['Community', document.getElementById('f_community').value],
+    ['Blood group', document.getElementById('f_blood').value],
+  ];
+  document.getElementById('reviewList').innerHTML = rows.map(r=>
+    '<div class="review-row"><span>'+r[0]+'</span><b>'+(r[1]||'—')+'</b></div>'
+  ).join('');
+}
+
+/* ---------- Submission (2-phase) ---------- */
+function collectFormData(){
+  return {
+    name: document.getElementById('f_name').value.trim(),
+    gender: window._gender || '',
+    dob: document.getElementById('f_dob').value,
+    className: document.getElementById('f_class').value.trim(),
+    subject: document.getElementById('f_subject').value.trim(),
+    mobile: document.getElementById('f_mobile').value.trim(),
+    email: document.getElementById('f_email').value.trim(),
+    aadhaar: document.getElementById('f_aadhaar').value.trim(),
+    community: document.getElementById('f_community').value,
+    bloodGroup: document.getElementById('f_blood').value,
+    remarks: document.getElementById('f_remarks').value.trim(),
+    photo: photoDataUrl
+  };
+}
+
+async function submitAll(){
+  goTo(8);
+  document.getElementById('statusNote').textContent = 'Creating your volunteer ID...';
+  const data = collectFormData();
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'register', data })
+    });
+    const json = await res.json();
+    if(!json.success){
+      document.getElementById('statusNote').textContent = json.error || 'Registration failed. Please try again.';
+      return;
+    }
+    assignedId = json.studentId;
+    document.getElementById('statusNote').textContent = 'Designing your ID card...';
+    await renderCards(data, assignedId);
+    document.getElementById('statusNote').textContent = 'Emailing your card...';
+    await finalizeSubmission(data);
+    document.getElementById('finalIdDisplay').textContent = assignedId;
+    goTo(9);
+  } catch(err){
+    document.getElementById('statusNote').textContent = 'Something went wrong. Please check your connection and try again.';
+  }
+}
+
+async function finalizeSubmission(data){
+  const pngData = document.getElementById('frontCanvas').toDataURL('image/png');
+  const pdfData = buildPdfBase64();
+  await fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    body: JSON.stringify({
+      action:'finalize',
+      studentId: assignedId,
+      email: data.email,
+      png: pngData,
+      pdf: pdfData
+    })
+  });
+}
+
+/* ---------- Card rendering (Seva palette) ---------- */
+async function renderCards(data, id){
+  await drawFront(data, id);
+  drawBack(id, data.email);
+}
+
+function roundRectPath(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function drawFront(data, id){
+  return new Promise(resolve=>{
+    const canvas = document.getElementById('frontCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const grad = ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,'#253253'); grad.addColorStop(0.5,'#1C2541'); grad.addColorStop(1,'#12182B');
+    ctx.fillStyle = grad; roundRectPath(ctx,0,0,W,H,22); ctx.fill();
+
+    // watermark
+    ctx.save();
+    ctx.globalAlpha = 0.04;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 90px Syne, sans-serif';
+    ctx.translate(30, 300); ctx.rotate(-0.1);
+    ctx.fillText('VOLUNTEER', 0, 0);
+    ctx.restore();
+
+    // top bar
+    ctx.fillStyle = 'transparent';
+    ctx.strokeStyle = '#E8A33D'; ctx.lineWidth = 1.5;
+    roundRectPath(ctx, 18, 18, 26, 26, 7); ctx.stroke();
+    ctx.fillStyle = '#E8A33D';
+    ctx.font = '800 13px Syne, sans-serif';
+    ctx.fillText('N', 26, 36);
+
+    ctx.font = '600 10px "Plus Jakarta Sans"';
+    ctx.fillStyle = '#E8A33D';
+    roundRectPath(ctx, W-84, 20, 66, 22, 11);
+    ctx.fillStyle = 'rgba(232,163,61,0.9)'; ctx.fill();
+    ctx.fillStyle = '#12182B';
+    ctx.fillText('NSS 2026', W-78, 34);
+
+    const finishFront = ()=>{
+      // photo
+      const px = W-176, py = 78, pw = 156, ph = 232;
+      roundRectPath(ctx, px, py, pw, ph, 16);
+      ctx.save(); ctx.clip();
+      if(data.photo){
+        const img = new Image();
+        img.onload = ()=>{
+          ctx.drawImage(img, px, py, pw, ph);
+          ctx.restore();
+          finishPanel();
+        };
+        img.src = data.photo;
+        return;
+      } else {
+        ctx.fillStyle = '#2C4C74'; ctx.fill();
+        ctx.restore();
+        finishPanel();
+      }
+    };
+
+    function finishPanel(){
+      // bottom glass panel
+      const panelY = H-172;
+      roundRectPath(ctx, 16, panelY, W-32, 156, 16);
+      ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(232,163,61,0.35)'; ctx.lineWidth = 1; ctx.stroke();
+
+      ctx.fillStyle = '#EDE6D6';
+      ctx.font = '800 24px Syne, sans-serif';
+      wrapText(ctx, data.name, 30, panelY+34, W-64, 26);
+
+      ctx.font = '600 11px "Plus Jakarta Sans"';
+      roundRectPath(ctx, 30, panelY+58, 120, 22, 11);
+      ctx.fillStyle = 'rgba(232,163,61,0.9)'; ctx.fill();
+      ctx.fillStyle = '#12182B';
+      ctx.fillText('NSS Volunteer', 40, panelY+73);
+
+      ctx.font = '500 11px "JetBrains Mono"';
+      ctx.fillStyle = '#a9b2c9';
+      ctx.fillText('BATCH 2025-26', W-150, panelY+73);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.moveTo(30, panelY+96); ctx.lineTo(W-30, panelY+96); ctx.stroke();
+
+      ctx.font = '600 15px "JetBrains Mono"';
+      ctx.fillStyle = '#F3C878';
+      ctx.fillText(id, 30, panelY+122);
+
+      ctx.font = '500 10px "Plus Jakarta Sans"';
+      ctx.fillStyle = '#a9b2c9';
+      ctx.fillText(data.className, 30, panelY+140);
+
+      resolve();
+    }
+
+    finishFront();
+  });
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '', lines = [];
+  for(const w of words){
+    const test = line + w + ' ';
+    if(ctx.measureText(test).width > maxWidth && line){ lines.push(line); line = w+' '; }
+    else line = test;
+  }
+  lines.push(line);
+  lines.slice(0,2).forEach((l,i)=> ctx.fillText(l.trim(), x, y + i*lineHeight));
+}
+
+function drawBack(id, email){
+  const canvas = document.getElementById('backCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#253253'); grad.addColorStop(1,'#12182B');
+  ctx.fillStyle = grad; roundRectPath(ctx,0,0,W,H,22); ctx.fill();
+
+  ctx.font = '600 10px "Plus Jakarta Sans"';
+  ctx.fillStyle = '#a9b2c9';
+  ctx.fillText('NSS · DIGITAL ID', 24, 34);
+
+  // QR via qrcodejs into a hidden div, then draw its canvas here
+  const holder = document.createElement('div');
+  holder.style.display='none'; document.body.appendChild(holder);
+  new QRCode(holder, {
+    text: 'https://srikumarm8248-droid.github.io/nss-digital-id/profile.html?id='+id,
+    width:172, height:172, colorDark:'#1C2541', colorLight:'#EDE6D6'
+  });
+  setTimeout(()=>{
+    const qrCanvas = holder.querySelector('canvas');
+    const qx = (W-172)/2, qy = 170;
+    ctx.fillStyle = '#EDE6D6';
+    roundRectPath(ctx, qx-12, qy-12, 196, 196, 14); ctx.fill();
+    if(qrCanvas) ctx.drawImage(qrCanvas, qx, qy, 172, 172);
+    document.body.removeChild(holder);
+
+    ctx.textAlign = 'center';
+    ctx.font = '700 17px Syne, sans-serif';
+    ctx.fillStyle = '#EDE6D6';
+    ctx.fillText('Scan to connect', W/2, qy+220);
+    ctx.font = '400 11px "Plus Jakarta Sans"';
+    ctx.fillStyle = '#a9b2c9';
+    ctx.fillText('Volunteer hours & certificates', W/2, qy+240);
+    ctx.textAlign = 'left';
+
+    ctx.font = '500 9.5px "JetBrains Mono"';
+    ctx.fillStyle = '#a9b2c9';
+    ctx.fillText('ID '+id, 24, H-24);
+    ctx.fillText('M.G.R. COLLEGE, HOSUR', W-190, H-24);
+  }, 150);
+}
+
+function buildPdfBase64(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'px', format:[340,566] });
+  doc.addImage(document.getElementById('frontCanvas').toDataURL('image/png'), 'PNG', 0,0,340,566);
+  doc.addPage([340,566]);
+  doc.addImage(document.getElementById('backCanvas').toDataURL('image/png'), 'PNG', 0,0,340,566);
+  return doc.output('datauristring');
+}
+
+function downloadPNG(){
+  const a = document.createElement('a');
+  a.href = document.getElementById('frontCanvas').toDataURL('image/png');
+  a.download = (assignedId||'nss-id')+'-front.png';
+  a.click();
+}
+function downloadPDF(){
+  const a = document.createElement('a');
+  a.href = buildPdfBase64();
+  a.download = (assignedId||'nss-id')+'.pdf';
+  a.click();
+}
+
+/* ---------- Lookup ---------- */
+function showLookup(){ goTo(10); }
+async function doLookup(){
+  const q = document.getElementById('lookupInput').value.trim();
+  if(!q) return;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:'POST', body: JSON.stringify({ action:'lookup', query:q })
+    });
+    const json = await res.json();
+    showErr('errLookup', !json.success);
+    if(json.success){ alert('Found it! Your ID card has been re-sent to your email.'); goTo(0); }
+  } catch(e){ showErr('errLookup', true); }
+}
+</script>
+</body>
+</html>
